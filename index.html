@@ -1,0 +1,1582 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZEED :> </title>
+    <meta name="description" content="Portfolio of a Full Stack Developer and Software Engineer.">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- English Fonts: Anton (Giant), Bebas Neue (Numbers), Caveat (Script), Outfit (Body) -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Caveat:wght@600&family=Outfit:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- Arabic Fonts: Lalezar (Giant), Aref Ruqaa (Script), Tajawal (Body & UI) -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Lalezar&family=Aref+Ruqaa:wght@400;700&family=Tajawal:wght@300;400;500;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- SplitType -->
+    <script src="https://unpkg.com/split-type"></script>
+
+    <!-- Three.js for Real 3D -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <!-- GSAP for scroll animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+    <!-- Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'brand-black': '#030303',
+                        'brand-dark': '#080808',
+                        'brand-gray': '#121212',
+                        'brand-red': '#E50914',
+                        'brand-red-dark': '#B80710',
+                        'text-muted': '#A3A3A3',
+                    },
+                    fontFamily: {
+                        impact: ['"Anton"', '"Lalezar"', 'sans-serif'],
+                        tall: ['"Bebas Neue"', '"Tajawal"', 'sans-serif'],
+                        script: ['"Caveat"', '"Aref Ruqaa"', 'cursive'],
+                        sans: ['"Outfit"', '"Tajawal"', 'sans-serif'],
+                        arabic: ['"Tajawal"', 'sans-serif'],
+                    },
+                    letterSpacing: {
+                        'super-tight': '-0.05em',
+                        'ultra-wide': '0.3em',
+                    },
+                    boxShadow: {
+                        'red-glow': '0 0 30px rgba(229, 9, 20, 0.5)',
+                        'red-glow-strong': '0 0 60px rgba(229, 9, 20, 0.8)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Base Setup */
+        body {
+            background-color: #030303;
+            color: #ffffff;
+            overflow-x: hidden;
+
+            /* Fix for horizontal scroll bugs */
+            @media (pointer: fine) {
+                body {
+                    cursor: none;
+                }
+
+                *,
+                *::before,
+                *::after {
+                    cursor: none !important;
+                }
+            }
+
+            /* Custom Cursor */
+            #custom-cursor {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 12px;
+                height: 12px;
+                background-color: #E50914;
+                border-radius: 50%;
+                pointer-events: none;
+                z-index: 9999;
+                transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1), height 0.4s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.4s;
+                mix-blend-mode: difference;
+                will-change: transform;
+            }
+
+            body.hovering-link #custom-cursor {
+                width: 60px;
+                height: 60px;
+                background-color: rgba(229, 9, 20, 0.15);
+                border: 1px solid #E50914;
+                mix-blend-mode: normal;
+            }
+
+            /* Noise & Glow */
+            .noise-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                pointer-events: none;
+                z-index: 9000;
+                opacity: 0.05;
+                background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAAGFBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMb/+yAAAACHRSTlMAAAAAAABh4AAACxRPUVMxMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTEvJwcwAAAALElEQVQ4y2NgQAX8DIwgwm8EwkA0LwMDKuBnYARL8EMkA9G8YBn+////PwMAj9cK+8X/vF8AAAAASUVORK5CYII=");
+                background-repeat: repeat;
+                will-change: transform;
+            }
+
+            #ambient-glow {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 60vw;
+                height: 60vw;
+                max-width: 600px;
+                max-height: 600px;
+                background: radial-gradient(circle, rgba(229, 9, 20, 0.15) 0%, transparent 70%);
+                border-radius: 50%;
+                pointer-events: none;
+                z-index: -1;
+                transform: translate(-50%, -50%);
+                transition: opacity 1s;
+                mix-blend-mode: screen;
+                will-change: transform;
+            }
+
+            /* Typography */
+            .giant-bg-text {
+                font-family: 'Anton', 'Lalezar', sans-serif;
+                font-size: clamp(4rem, 15vw, 26rem);
+                line-height: 0.8;
+                color: transparent;
+                -webkit-text-stroke: 2px rgba(229, 9, 20, 0.15);
+                text-transform: uppercase;
+                letter-spacing: -0.02em;
+                position: absolute;
+                top: 20%;
+                left: 50%;
+                transform: translateX(-50%);
+                white-space: nowrap;
+                z-index: 0;
+                user-select: none;
+                transition: color 0.5s ease;
+            }
+
+            .giant-bg-text:hover {
+                color: rgba(229, 9, 20, 0.05);
+                -webkit-text-stroke: 2px rgba(229, 9, 20, 0.4);
+            }
+
+            html[dir="rtl"] .giant-bg-text {
+                font-size: clamp(4rem, 14vw, 20rem);
+                top: 25%;
+                -webkit-text-stroke: 3px rgba(229, 9, 20, 0.5);
+                text-shadow: none;
+            }
+
+            .name-title {
+                font-family: 'Anton', 'Lalezar', sans-serif;
+                line-height: 0.85;
+                text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            }
+
+            .text-3d-real {
+                color: #ffffff;
+                text-shadow:
+                    1px 1px 0px #b30710, 2px 2px 0px #a3060e, 3px 3px 0px #93050c,
+                    4px 4px 0px #83040a, 5px 5px 0px #720308, 6px 6px 0px #620206,
+                    7px 7px 0px #520104, 8px 8px 0px #420102,
+                    9px 9px 15px rgba(0, 0, 0, 0.9), 9px 9px 30px rgba(229, 9, 20, 0.6);
+                display: inline-block;
+            }
+
+            .script-text {
+                font-family: 'Caveat', cursive;
+                font-size: 3.5rem;
+                transform: rotate(-4deg);
+                color: #E50914;
+            }
+
+            html[dir="rtl"] .script-text {
+                font-family: 'Aref Ruqaa', serif;
+                font-style: normal;
+                font-weight: 700;
+                font-size: 2.8rem;
+                line-height: 1.2;
+                transform: rotate(0deg);
+            }
+
+            .number-font {
+                font-family: 'Bebas Neue', sans-serif;
+            }
+
+            /* UI Elements */
+            .skill-chip {
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                background: rgba(255, 255, 255, 0.02);
+                padding: 0.75rem 1.5rem;
+                font-size: 0.8rem;
+                letter-spacing: 0.1em;
+                text-transform: uppercase;
+                border-radius: 100px;
+                transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            }
+
+            .skill-chip:hover {
+                border-color: #E50914;
+                background: rgba(229, 9, 20, 0.1);
+                color: #fff;
+                box-shadow: 0 0 20px rgba(229, 9, 20, 0.3);
+                transform: translateY(-3px);
+            }
+
+            /* 3D Tilt Card */
+            .tilt-card {
+                perspective: 1500px;
+                transform-style: preserve-3d;
+            }
+
+            .tilt-inner {
+                transform-style: preserve-3d;
+                transition: box-shadow 0.4s;
+            }
+
+            .tilt-inner::after {
+                content: '';
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(to top, rgba(229, 9, 20, 0.8) 0%, transparent 60%);
+                opacity: 0;
+                transition: opacity 0.4s ease;
+                z-index: 1;
+                pointer-events: none;
+            }
+
+            .tilt-card:hover .tilt-inner::after {
+                opacity: 1;
+            }
+
+            .card-content {
+                transform: translateZ(50px);
+            }
+
+            /* Red Quote Block */
+            .red-quote-block {
+                background: linear-gradient(135deg, #E50914 0%, #8b0000 100%);
+                position: relative;
+                overflow: hidden;
+            }
+
+            .red-quote-block::before {
+                content: '';
+                position: absolute;
+                inset: 0;
+                background-image: radial-gradient(circle at 100% 0%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            }
+
+            /* Marquee */
+            .marquee-track {
+                display: flex;
+                white-space: nowrap;
+                will-change: transform;
+            }
+
+            /* Scrollbar */
+            ::-webkit-scrollbar {
+                width: 6px;
+                height: 6px;
+            }
+
+            ::-webkit-scrollbar-track {
+                background: #030303;
+            }
+
+            ::-webkit-scrollbar-thumb {
+                background: #333;
+                border-radius: 10px;
+            }
+
+            ::-webkit-scrollbar-thumb:hover {
+                background: #E50914;
+            }
+
+            .border-brand-subtle {
+                border-color: rgba(255, 255, 255, 0.06);
+            }
+
+            /* Footer Reveal wrapper */
+            .main-wrapper {
+                position: relative;
+                z-index: 10;
+                background-color: #030303;
+                margin-bottom: 60vh;
+                /* space for footer */
+                box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+            }
+
+            .footer-reveal {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 60vh;
+                z-index: 0;
+            }
+
+            /* FAQ Accordion */
+            .faq-item {
+                border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+                overflow: hidden;
+            }
+
+            .faq-answer {
+                max-height: 0;
+                opacity: 0;
+                transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            }
+
+            .faq-item.active .faq-answer {
+                max-height: 200px;
+                opacity: 1;
+                margin-top: 1rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .faq-icon {
+                transition: transform 0.4s ease;
+            }
+
+            .faq-item.active .faq-icon {
+                transform: rotate(45deg);
+                color: #E50914;
+            }
+    </style>
+</head>
+
+<body class="antialiased selection:bg-brand-red selection:text-white">
+
+
+
+    <!-- Language Switch Transition -->
+    <div id="lang-transition"
+        class="fixed inset-0 z-[999] bg-brand-red pointer-events-none transform translate-y-full flex flex-col items-center justify-center">
+        <div class="text-white/20 text-9xl font-impact tracking-widest uppercase animate-pulse">ZEED</div>
+        <div class="text-white text-xl font-bold tracking-widest uppercase mt-4">UPDATING EXPERIENCE...</div>
+    </div>
+
+    <!-- Preloader -->
+    <div id="preloader" class="fixed inset-0 z-[100] bg-brand-black flex flex-col items-center justify-center">
+        <div class="text-brand-red text-5xl md:text-8xl font-impact tracking-widest overflow-hidden flex gap-2">
+            <span class="inline-block translate-y-[120%] preloader-text">Z</span>
+            <span class="inline-block translate-y-[120%] preloader-text">E</span>
+            <span class="inline-block translate-y-[120%] preloader-text">E</span>
+            <span class="inline-block translate-y-[120%] preloader-text">D</span>
+        </div>
+        <div class="w-48 h-[2px] bg-white/10 mt-8 overflow-hidden rounded-full">
+            <div id="preloader-bar" class="h-full bg-brand-red w-0"></div>
+        </div>
+    </div>
+
+    <!-- Scroll Progress -->
+    <div class="fixed top-0 left-0 w-full h-1 z-[110] bg-white/5">
+        <div id="scroll-progress" class="h-full bg-brand-red w-0 shadow-red-glow"></div>
+    </div>
+
+    <!-- Film Grain & Ambient Glow -->
+    <div class="noise-overlay"></div>
+    <div id="ambient-glow"></div>
+    <div id="custom-cursor" class="hidden md:block"></div>
+
+    <!-- Top Navbar Bar (Smart Header) -->
+    <header id="main-header"
+        class="fixed top-0 left-0 right-0 z-50 p-6 md:px-12 flex justify-between items-center text-[10px] md:text-xs tracking-[0.2em] uppercase text-text-muted font-bold bg-brand-black/70 backdrop-blur-xl border-b border-white/5 transition-transform duration-500">
+        <div class="flex flex-col gap-1 magnetic custom-hover cursor-pointer" onclick="window.scrollTo(0,0)">
+            <span class="text-brand-red font-bold" data-i18n="top_title">SOFTWARE ENGINEER</span>
+            <span class="text-white/70" data-i18n="top_subtitle">DIGITAL CREATOR</span>
+        </div>
+
+        <button id="lang-switch-btn"
+            class="magnetic custom-hover border border-white/10 bg-white/5 px-6 py-2.5 rounded-full hover:border-brand-red hover:bg-brand-red/10 hover:text-white transition-colors flex items-center gap-2 shadow-lg">
+            <i data-lucide="globe" class="w-3.5 h-3.5"></i>
+            <span id="lang-btn-label">English</span>
+        </button>
+
+        <div class="hidden md:flex items-center gap-3 magnetic custom-hover">
+            <span data-i18n="top_available">AVAILABLE FOR FREELANCE</span>
+            <span class="relative flex h-2.5 w-2.5">
+                <span
+                    class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-red opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-brand-red shadow-red-glow"></span>
+            </span>
+        </div>
+    </header>
+
+    <!-- Main Content Wrapper (For Footer Reveal) -->
+    <main class="main-wrapper">
+
+        <!-- ==========================================
+             SECTION 1: HERO
+        =========================================== -->
+        <section
+            class="relative min-h-[100vh] pt-32 overflow-hidden flex flex-col items-center justify-end border-b border-brand-subtle">
+            <div class="giant-bg-text" data-i18n="hero_bg">PORTFOLIO</div>
+
+            <div
+                class="w-full max-w-[1500px] mx-auto px-6 md:px-12 relative z-20 flex flex-col lg:flex-row items-center lg:items-end justify-between pb-16 gap-12 lg:gap-0 mt-20 lg:mt-0 text-center lg:text-left rtl:lg:text-right">
+
+                <div
+                    class="w-full lg:w-1/3 flex flex-col items-center lg:items-start z-30 order-2 lg:order-1 gs-reveal-left">
+                    <div class="mb-5">
+                        <span class="script-text block mb-2" data-i18n="hero_hello">Hello, I'm</span>
+                        <h1
+                            class="name-title text-5xl sm:text-6xl md:text-8xl lg:text-[7rem] text-white uppercase tracking-super-tight flex flex-col pt-2">
+                            <span data-i18n="hero_name_first">ZEED</span>
+                            <span data-i18n="hero_name_last" class="text-brand-red">AL-SUBAIE</span>
+                        </h1>
+                    </div>
+                    <h2 class="text-white/80 font-bold text-sm md:text-base tracking-[0.25em] uppercase mb-6"
+                        data-i18n="hero_role">
+                        FULL STACK<br>DEVELOPER
+                    </h2>
+                    <p class="text-text-muted text-sm leading-loose max-w-[300px] mb-10 font-medium text-center lg:text-left rtl:lg:text-right"
+                        data-i18n="hero_desc">
+                        I architect and build robust, high-performance web applications. Passionate about clean code,
+                        scalable systems, and building solutions that solve complex problems.
+                    </p>
+                    <div
+                        class="magnetic custom-hover flex items-center gap-3 text-xs text-white/80 tracking-[0.2em] uppercase font-bold bg-white/5 px-6 py-3 rounded-full border border-white/10 shadow-lg">
+                        <i data-lucide="globe-2" class="w-4 h-4 text-brand-red animate-pulse"></i>
+                        <span data-i18n="hero_location">AVAILABLE WORLDWIDE</span>
+                    </div>
+                </div>
+
+                <div
+                    class="w-full lg:w-1/3 relative lg:absolute lg:bottom-0 lg:left-1/2 lg:-translate-x-1/2 z-20 flex justify-center order-1 lg:order-2 mt-8 lg:mt-0">
+                    <img src="ME.png" alt="Zeed Portrait"
+                        class="hero-portrait w-full max-w-[320px] lg:max-w-[450px] drop-shadow-2xl"
+                        style="mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%); -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%);">
+                </div>
+
+                <div
+                    class="w-full lg:w-1/3 flex flex-row lg:flex-col justify-center lg:justify-end items-center lg:items-end z-30 order-3 text-center lg:text-right rtl:lg:text-left gap-8 lg:gap-20 gs-reveal-right">
+                    <div class="hidden sm:flex items-start gap-5 lg:self-end text-left rtl:text-right max-w-[220px]">
+                        <div
+                            class="magnetic w-12 h-12 rounded-full border border-brand-red/40 flex items-center justify-center flex-shrink-0 relative group custom-hover">
+                            <div
+                                class="w-2 h-2 bg-brand-red rounded-full group-hover:scale-150 transition-transform shadow-red-glow">
+                            </div>
+                        </div>
+                        <p class="text-xs text-text-muted leading-relaxed font-medium" data-i18n="hero_crosshair">
+                            Turning ideas into powerful digital experiences using cutting-edge technologies.
+                        </p>
+                    </div>
+                    <div class="flex flex-col sm:flex-row lg:flex-col gap-6 sm:gap-10 lg:gap-8 text-left rtl:text-right"
+                        dir="ltr">
+                        <div class="flex items-center gap-5 magnetic custom-hover p-2">
+                            <span
+                                class="number-font text-brand-red text-6xl leading-none drop-shadow-red-glow">3+</span>
+                            <span
+                                class="text-[11px] text-white/70 tracking-[0.2em] uppercase font-bold leading-relaxed"><span
+                                    data-i18n="stat_years">YEARS</span><br><span
+                                    data-i18n="stat_exp">EXPERIENCE</span></span>
+                        </div>
+                        <div class="flex items-center gap-5 magnetic custom-hover p-2">
+                            <span
+                                class="number-font text-brand-red text-6xl leading-none drop-shadow-red-glow">40+</span>
+                            <span
+                                class="text-[11px] text-white/70 tracking-[0.2em] uppercase font-bold leading-relaxed"><span
+                                    data-i18n="stat_proj">PROJECTS</span><br><span
+                                    data-i18n="stat_comp">COMPLETED</span></span>
+                        </div>
+                        <div class="flex items-center gap-5 magnetic custom-hover p-2">
+                            <span
+                                class="number-font text-brand-red text-6xl leading-none drop-shadow-red-glow">20+</span>
+                            <span
+                                class="text-[11px] text-white/70 tracking-[0.2em] uppercase font-bold leading-relaxed"><span
+                                    data-i18n="stat_happy">HAPPY</span><br><span
+                                    data-i18n="stat_clients">CLIENTS</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scroll Indicator -->
+            <div
+                class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-50 animate-bounce">
+                <span class="text-[10px] tracking-widest uppercase font-bold text-white/50">SCROLL</span>
+                <div class="w-[1px] h-12 bg-gradient-to-b from-brand-red to-transparent"></div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             SECTION 2: SERVICES (NEW)
+        =========================================== -->
+        <section class="py-24 px-6 md:px-12 border-b border-brand-subtle bg-brand-dark/20 relative">
+            <div class="max-w-[1500px] mx-auto">
+                <div class="text-center mb-16 gs-fade-up">
+                    <h2 class="text-sm text-brand-red tracking-[0.3em] font-bold uppercase mb-4"
+                        data-i18n="sec_services_sub">WHAT I DO</h2>
+                    <h3 class="text-4xl md:text-5xl font-bold uppercase tracking-widest text-white"><span
+                            data-i18n="sec_services_title">MY</span> <span class="text-brand-red"
+                            data-i18n="sec_services_title2">EXPERTISE</span></h3>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- S1 -->
+                    <div
+                        class="magnetic-card p-10 rounded-2xl border border-white/5 bg-white/5 backdrop-blur-md hover:border-brand-red/50 hover:bg-brand-red/5 transition-colors duration-500 gs-fade-up group cursor-pointer shadow-xl hover:shadow-red-glow">
+                        <div
+                            class="w-16 h-16 rounded-full bg-brand-red/10 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
+                            <i data-lucide="pen-tool" class="w-8 h-8 text-brand-red"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-white mb-4 uppercase tracking-wider" data-i18n="serv1_title">
+                            FRONTEND ENGINEERING</h4>
+                        <p class="text-sm text-text-muted leading-relaxed font-medium" data-i18n="serv1_desc">Building
+                            highly interactive and performant user interfaces using React, Next.js, and modern state
+                            management.</p>
+                    </div>
+                    <!-- S2 -->
+                    <div class="magnetic-card p-10 rounded-2xl border border-white/5 bg-white/5 backdrop-blur-md hover:border-brand-red/50 hover:bg-brand-red/5 transition-colors duration-500 gs-fade-up group cursor-pointer shadow-xl hover:shadow-red-glow"
+                        style="transition-delay: 100ms;">
+                        <div
+                            class="w-16 h-16 rounded-full bg-brand-red/10 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
+                            <i data-lucide="gamepad-2" class="w-8 h-8 text-brand-red"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-white mb-4 uppercase tracking-wider" data-i18n="serv2_title">
+                            GAME DEVELOPMENT</h4>
+                        <p class="text-text-muted text-sm leading-relaxed" data-i18n="serv2_desc">Building interactive
+                            2D and 3D games using Unity and C#.</p>
+                    </div>
+                    <!-- S3 -->
+                    <div class="magnetic-card p-10 rounded-2xl border border-white/5 bg-white/5 backdrop-blur-md hover:border-brand-red/50 hover:bg-brand-red/5 transition-colors duration-500 gs-fade-up group cursor-pointer shadow-xl hover:shadow-red-glow"
+                        style="transition-delay: 200ms;">
+                        <div
+                            class="w-16 h-16 rounded-full bg-brand-red/10 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
+                            <i data-lucide="cpu" class="w-8 h-8 text-brand-red"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-white mb-4 uppercase tracking-wider" data-i18n="serv3_title">
+                            ARDUINO</h4>
+                        <p class="text-text-muted text-sm leading-relaxed" data-i18n="serv3_desc">Programming and
+                            building embedded systems and interactive hardware projects using C++.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             SECTION 3: HORIZONTAL PROJECTS GALLERY (NEW)
+        =========================================== -->
+        <section id="projects-pin"
+            class="min-h-[100dvh] flex items-center overflow-hidden border-b border-brand-subtle bg-brand-black relative">
+            <div id="projects-container"
+                class="flex h-full items-center pl-6 md:pl-24 rtl:pl-0 rtl:pr-6 rtl:md:pr-24 w-max">
+
+                <!-- Section Intro -->
+                <div class="w-[90vw] md:w-[40vw] flex-shrink-0 px-6 flex flex-col justify-center">
+                    <h2 class="text-6xl md:text-8xl font-bold uppercase tracking-widest text-white mb-6 leading-none">
+                        <span data-i18n="sec_projects">SELECTED</span><br><span class="text-brand-red"
+                            data-i18n="sec_projects2">PROJECTS</span></h2>
+                    <p class="text-text-muted max-w-md text-base md:text-lg mb-10" data-i18n="projects_desc">A curated
+                        selection of my technical work, showcasing complex problem solving and modern architectures.</p>
+                    <div class="flex items-center gap-4 text-white/50 animate-pulse">
+                        <i data-lucide="arrow-right" class="w-8 h-8 rtl:rotate-180"></i>
+                        <span class="text-xs uppercase tracking-widest font-bold" data-i18n="projects_scroll">SCROLL TO
+                            EXPLORE</span>
+                    </div>
+                </div>
+
+                <!-- Project Cards (Horizontal) -->
+                <div class="flex gap-12 px-12 md:px-24">
+
+                    <!-- Proj 1 -->
+                    <div class="w-[85vw] md:w-[50vw] flex-shrink-0 tilt-card custom-hover">
+                        <div
+                            class="tilt-inner relative aspect-[16/9] bg-brand-gray overflow-hidden mb-6 rounded-xl border border-white/10 shadow-2xl">
+                            <img src="tadwir.png" alt="Tadwir"
+                                class="relative z-0 w-full h-full object-cover opacity-80 filter grayscale hover:grayscale-0 transition-all duration-700">
+                            <div
+                                class="absolute inset-0 bg-brand-red/20 opacity-0 hover:opacity-100 transition-opacity duration-500 pointer-events-none mix-blend-overlay">
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-6 card-content">
+                            <span class="number-font text-6xl text-brand-red leading-none mt-[-6px]">01</span>
+                            <div>
+                                <h3 class="text-xl sm:text-2xl font-bold text-white uppercase tracking-wider"
+                                    data-i18n="proj1_title">TADWIR</h3>
+                                <p class="text-xs text-text-muted tracking-[0.2em] uppercase" data-i18n="proj1_type">
+                                    SMART KIOSK / AI PLATFORM</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Proj 2 -->
+                    <div class="w-[85vw] md:w-[50vw] flex-shrink-0 tilt-card custom-hover">
+                        <div
+                            class="tilt-inner relative aspect-[16/9] bg-brand-gray overflow-hidden mb-6 rounded-xl border border-white/10 shadow-2xl">
+                            <img src="ai.png" alt="Conrh AI"
+                                class="relative z-0 w-full h-full object-cover opacity-80 filter grayscale hover:grayscale-0 transition-all duration-700">
+                        </div>
+                        <div class="flex items-start gap-6 card-content">
+                            <span class="number-font text-6xl text-brand-red leading-none mt-[-6px]">02</span>
+                            <div>
+                                <h3 class="text-2xl font-bold uppercase tracking-widest mb-2 text-white"
+                                    data-i18n="proj2_title">CONRH AI</h3>
+                                <p class="text-xs text-text-muted tracking-[0.2em] uppercase" data-i18n="proj2_type">AI
+                                    WORKSPACE / LOCAL LLM</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Proj 3 -->
+                    <div class="w-[85vw] md:w-[50vw] flex-shrink-0 tilt-card custom-hover mr-12 rtl:mr-0 rtl:ml-12">
+                        <div
+                            class="tilt-inner relative aspect-[16/9] bg-brand-gray overflow-hidden mb-6 rounded-xl border border-white/10 shadow-2xl">
+                            <img src="boomah.png" alt="Boomah"
+                                class="relative z-0 w-full h-full object-cover opacity-80 filter grayscale hover:grayscale-0 transition-all duration-700">
+                        </div>
+                        <div class="flex items-start gap-6 card-content">
+                            <span class="number-font text-6xl text-brand-red leading-none mt-[-6px]">03</span>
+                            <div>
+                                <h3 class="text-2xl font-bold uppercase tracking-widest mb-2 text-white"
+                                    data-i18n="proj3_title">BOOMAH</h3>
+                                <p class="text-xs text-text-muted tracking-[0.2em] uppercase" data-i18n="proj3_type">
+                                    EDTECH PLATFORM</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             SECTION 4: TESTIMONIALS MARQUEE (NEW)
+        =========================================== -->
+        <section class="py-16 border-b border-brand-subtle overflow-hidden bg-brand-red flex items-center">
+            <div
+                class="marquee-track flex whitespace-nowrap gap-12 text-brand-black font-impact text-6xl md:text-8xl uppercase leading-none">
+                <span data-i18n="test1">"FLAWLESS ARCHITECTURE" — TECH LEAD</span>
+                <i data-lucide="star" class="w-16 h-16 inline-block self-center"></i>
+                <span data-i18n="test2">"INCREDIBLY FAST" — PRODUCT MANAGER</span>
+                <i data-lucide="star" class="w-16 h-16 inline-block self-center"></i>
+                <span data-i18n="test3">"CLEANEST CODEBASE" — SENIOR DEV</span>
+                <i data-lucide="star" class="w-16 h-16 inline-block self-center"></i>
+                <!-- Duplicates for seamless loop -->
+                <span data-i18n="test1">"FLAWLESS ARCHITECTURE" — TECH LEAD</span>
+                <i data-lucide="star" class="w-16 h-16 inline-block self-center"></i>
+                <span data-i18n="test2">"INCREDIBLY FAST" — PRODUCT MANAGER</span>
+                <i data-lucide="star" class="w-16 h-16 inline-block self-center"></i>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             SECTION 5: EDUCATION, SKILLS & PROCESS
+        =========================================== -->
+        <section class="border-b border-brand-subtle bg-brand-dark/30">
+            <div
+                class="grid grid-cols-1 lg:grid-cols-3 divide-y lg:divide-y-0 lg:divide-x border-brand-subtle rtl:divide-x-reverse min-h-[600px]">
+
+                <!-- Col 1: Education & Skills -->
+                <div class="p-8 md:px-12 lg:p-16 flex flex-col gs-fade-up">
+                    <h2 class="text-xl font-bold uppercase tracking-widest mb-12 pb-6 border-b border-brand-subtle text-white"
+                        data-i18n="sec_edu_skills">EDUCATION & SKILLS</h2>
+
+                    <h3 class="text-brand-red text-xs tracking-[0.25em] font-bold uppercase mb-8 flex items-center gap-3"
+                        data-i18n="sub_edu">
+                        <i data-lucide="graduation-cap" class="w-4 h-4"></i> EDUCATION
+                    </h3>
+
+                    <div
+                        class="mb-8 group magnetic custom-hover cursor-pointer p-4 -mx-4 rounded-xl hover:bg-white/5 transition-colors">
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="text-base font-semibold text-white/90 group-hover:text-brand-red transition-colors"
+                                data-i18n="edu1_title">B.Sc. in Computer Science</h4>
+                            <span class="text-brand-red text-xs font-bold bg-brand-red/10 px-2 py-1 rounded">2026</span>
+                        </div>
+                        <p class="text-sm text-text-muted" data-i18n="edu1_uni">King Saud University</p>
+                    </div>
+
+                    <h3 class="text-brand-red text-xs tracking-[0.25em] font-bold uppercase mb-8 flex items-center gap-3"
+                        data-i18n="sub_skills">
+                        <i data-lucide="layers" class="w-4 h-4"></i> SKILLS
+                    </h3>
+
+                    <div class="flex flex-wrap gap-3">
+                        <span class="magnetic skill-chip custom-hover">C#</span>
+                        <span class="magnetic skill-chip custom-hover">C++</span>
+                        <span class="magnetic skill-chip custom-hover">PYTHON</span>
+                        <span class="magnetic skill-chip custom-hover">UI/UX</span>
+                    </div>
+                </div>
+
+                <!-- Col 2: Work Process -->
+                <div class="p-8 md:px-12 lg:p-16 flex flex-col gs-fade-up bg-brand-black/50"
+                    style="transition-delay: 100ms;">
+                    <h2 class="text-xl font-bold uppercase tracking-widest mb-12 pb-6 border-b border-brand-subtle text-white"
+                        data-i18n="sec_process">WORK PROCESS</h2>
+
+                    <div class="relative flex flex-col gap-12">
+                        <div
+                            class="timeline-line hidden sm:block absolute inset-y-2 left-[3.25rem] rtl:left-auto rtl:right-[3.25rem] w-[2px] bg-gradient-to-b from-brand-red to-transparent">
+                        </div>
+
+                        <!-- Step 1 -->
+                        <div
+                            class="relative flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left rtl:sm:text-right gap-4 sm:gap-6 z-10 group magnetic custom-hover cursor-pointer p-4 -mx-4 rounded-xl hover:bg-white/5 transition-colors">
+                            <span
+                                class="number-font text-4xl text-brand-red/30 group-hover:text-brand-red w-8 text-center sm:text-right transition-colors mt-[-4px]">01</span>
+                            <div
+                                class="w-12 h-12 rounded-full border border-brand-red/50 bg-brand-black flex items-center justify-center flex-shrink-0 text-brand-red group-hover:bg-brand-red group-hover:text-white group-hover:shadow-red-glow transition-all">
+                                <i data-lucide="git-branch" class="w-5 h-5"></i>
+                            </div>
+                            <div class="pt-1">
+                                <h4 class="text-lg font-bold text-white group-hover:text-brand-red uppercase tracking-widest mb-2 transition-colors"
+                                    data-i18n="proc1_title">PLAN</h4>
+                                <p class="text-sm text-text-muted leading-relaxed" data-i18n="proc1_desc">System
+                                    architecture design, database schema planning, and API spec definition.</p>
+                            </div>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div
+                            class="relative flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left rtl:sm:text-right gap-4 sm:gap-6 z-10 group magnetic custom-hover cursor-pointer p-4 -mx-4 rounded-xl hover:bg-white/5 transition-colors">
+                            <span
+                                class="number-font text-4xl text-brand-red/30 group-hover:text-brand-red w-8 text-center sm:text-right transition-colors mt-[-4px]">02</span>
+                            <div
+                                class="w-12 h-12 rounded-full border border-brand-red/50 bg-brand-black flex items-center justify-center flex-shrink-0 text-brand-red group-hover:bg-brand-red group-hover:text-white group-hover:shadow-red-glow transition-all">
+                                <i data-lucide="code" class="w-5 h-5"></i>
+                            </div>
+                            <div class="pt-1">
+                                <h4 class="text-lg font-bold text-white group-hover:text-brand-red uppercase tracking-widest mb-2 transition-colors"
+                                    data-i18n="proc2_title">BUILD</h4>
+                                <p class="text-sm text-text-muted leading-relaxed" data-i18n="proc2_desc">Writing clean,
+                                    testable code using Agile methodologies and modern frameworks.</p>
+                            </div>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div
+                            class="relative flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left rtl:sm:text-right gap-4 sm:gap-6 z-10 group magnetic custom-hover cursor-pointer p-4 -mx-4 rounded-xl hover:bg-white/5 transition-colors">
+                            <span
+                                class="number-font text-4xl text-brand-red/30 group-hover:text-brand-red w-8 text-center sm:text-right transition-colors mt-[-4px]">03</span>
+                            <div
+                                class="w-12 h-12 rounded-full border border-brand-red/50 bg-brand-black flex items-center justify-center flex-shrink-0 text-brand-red group-hover:bg-brand-red group-hover:text-white group-hover:shadow-red-glow transition-all">
+                                <i data-lucide="terminal" class="w-5 h-5"></i>
+                            </div>
+                            <div class="pt-1">
+                                <h4 class="text-lg font-bold text-white group-hover:text-brand-red uppercase tracking-widest mb-2 transition-colors"
+                                    data-i18n="proc3_title">DEPLOY</h4>
+                                <p class="text-sm text-text-muted leading-relaxed" data-i18n="proc3_desc">Setting up
+                                    CI/CD pipelines, containerization, and cloud infrastructure.</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Col 3: Red Quote Block -->
+                <div class="red-quote-block p-8 md:px-12 lg:p-16 flex flex-col justify-between gs-fade-up text-white"
+                    style="transition-delay: 200ms;">
+                    <div class="relative z-10">
+                        <div class="text-white/20 text-9xl font-serif leading-none mb-2 absolute -top-8 -left-4">"</div>
+                        <p class="text-3xl lg:text-4xl font-medium leading-[1.4] mb-10 relative z-10 drop-shadow-md"
+                            data-i18n="quote_text">
+                            Good code is its own best documentation.
+                        </p>
+                        <span class="script-text text-4xl text-white opacity-90 inline-block mb-12 drop-shadow-sm">Zeed
+                            Al-Subaie</span>
+                    </div>
+
+                    <div class="relative z-10 mt-auto pt-10">
+                        <div class="w-12 h-[2px] bg-white/40 mb-8"></div>
+                        <p class="text-base font-bold uppercase tracking-[0.25em] mb-6 leading-relaxed text-white/90"
+                            data-i18n="quote_footer">
+                            LET'S CREATE<br>SOMETHING GREAT<br>TOGETHER.
+                        </p>
+                        <i data-lucide="sparkles" class="w-6 h-6 text-white/70 animate-pulse"></i>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ==========================================
+             SECTION 6: FAQ ACCORDION (NEW)
+        =========================================== -->
+        <section class="py-24 px-6 md:px-12 border-b border-brand-subtle bg-brand-black">
+            <div class="max-w-[1000px] mx-auto">
+                <h2
+                    class="text-4xl md:text-5xl font-bold uppercase tracking-widest text-white mb-16 text-center gs-fade-up">
+                    <span data-i18n="sec_faq">FREQUENTLY ASKED</span> <span class="text-brand-red">QUESTIONS</span></h2>
+
+                <div class="flex flex-col gs-fade-up">
+                    <div class="faq-item cursor-pointer py-6" role="button" tabindex="0"
+                        onclick="this.classList.toggle('active')"
+                        onkeydown="if(event.key==='Enter'||event.key===' ') { event.preventDefault(); this.classList.toggle('active'); }">
+                        <div class="flex justify-between items-center custom-hover">
+                            <h3 class="text-xl font-bold text-white hover:text-brand-red transition-colors"
+                                data-i18n="faq1_q">What programming languages do you use?</h3>
+                            <i data-lucide="plus" class="faq-icon w-6 h-6 text-text-muted"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p class="text-text-muted text-sm leading-relaxed" data-i18n="faq1_a">I primarily work with
+                                C# and C++ for game development and hardware, along with Python for backend logic and
+                                AI.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item cursor-pointer py-6" role="button" tabindex="0"
+                        onclick="this.classList.toggle('active')"
+                        onkeydown="if(event.key==='Enter'||event.key===' ') { event.preventDefault(); this.classList.toggle('active'); }">
+                        <div class="flex justify-between items-center custom-hover">
+                            <h3 class="text-xl font-bold text-white hover:text-brand-red transition-colors"
+                                data-i18n="faq2_q">Can you build custom Arduino projects?</h3>
+                            <i data-lucide="plus" class="faq-icon w-6 h-6 text-text-muted"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p class="text-text-muted text-sm leading-relaxed" data-i18n="faq2_a">Yes, I design and
+                                program custom Arduino-based circuits for robotics, IoT devices, and interactive
+                                installations.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item cursor-pointer py-6" role="button" tabindex="0"
+                        onclick="this.classList.toggle('active')"
+                        onkeydown="if(event.key==='Enter'||event.key===' ') { event.preventDefault(); this.classList.toggle('active'); }">
+                        <div class="flex justify-between items-center custom-hover">
+                            <h3 class="text-xl font-bold text-white hover:text-brand-red transition-colors"
+                                data-i18n="faq3_q">Do you provide UI/UX design services?</h3>
+                            <i data-lucide="plus" class="faq-icon w-6 h-6 text-text-muted"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p class="text-text-muted text-sm leading-relaxed" data-i18n="faq3_a">Absolutely. I design
+                                intuitive and modern user interfaces for web and mobile applications before beginning
+                                the development phase.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             SECTION 7: THE COSMIC VOID (BLACK HOLE)
+        =========================================== -->
+        <section
+            class="relative w-full h-[100dvh] overflow-hidden flex flex-col items-center justify-center bg-brand-black border-t border-white/5">
+            <div class="relative z-10 text-center pointer-events-none mt-[40vh] px-4">
+                <h2 class="text-6xl md:text-8xl font-impact tracking-widest text-white uppercase drop-shadow-2xl"
+                    data-i18n="bh_title">THE END</h2>
+                <p class="text-text-muted mt-4 font-sans max-w-lg mx-auto text-sm md:text-base drop-shadow-md"
+                    data-i18n="bh_desc">Where all ideas converge into singular brilliance.</p>
+            </div>
+
+            <!-- 3D Canvas (Black Hole) -->
+            <canvas id="webgl-canvas"
+                class="absolute top-0 left-0 w-full h-full pointer-events-none z-0 opacity-80"></canvas>
+
+            <!-- Vignette overlay to blend edges -->
+            <div class="absolute inset-0 z-[5] pointer-events-none"
+                style="background: radial-gradient(circle, transparent 40%, #030303 90%);"></div>
+        </section>
+
+    </main> <!-- End Main Wrapper -->
+
+    <!-- ==========================================
+         SECTION 7: FOOTER REVEAL (NEW)
+    =========================================== -->
+    <footer class="footer-reveal flex flex-col md:flex-row border-t border-brand-red/20">
+
+        <!-- Let's work together text -->
+        <div
+            class="w-full md:w-1/2 p-8 md:px-12 lg:p-16 flex flex-col justify-center relative overflow-hidden bg-brand-dark h-full">
+            <div class="absolute -left-20 -bottom-20 w-96 h-96 bg-brand-red rounded-full blur-[150px] opacity-20"></div>
+
+            <h2
+                class="text-4xl sm:text-5xl md:text-7xl font-bold uppercase leading-tight mb-8 flex flex-col gap-2 relative z-10">
+                <span data-i18n="contact_h2_1">LET'S WORK</span>
+                <span class="flex items-center gap-4">
+                    <span class="text-brand-red" data-i18n="contact_h2_2">TOGETHER</span>
+                    <i data-lucide="arrow-up-right" class="w-10 h-10 text-brand-red"></i>
+                </span>
+            </h2>
+            <p class="text-sm md:text-base text-text-muted leading-relaxed mb-12 max-w-md relative z-10"
+                data-i18n="contact_desc">
+                I'm currently open for new projects and collaborations. Let's create something amazing that drives
+                results.
+            </p>
+            <div
+                class="magnetic custom-hover flex items-center gap-4 text-xs font-bold text-white uppercase tracking-[0.2em] bg-white/5 border border-white/10 w-fit px-6 py-3 rounded-full relative z-10 shadow-lg">
+                <div class="w-2 h-2 rounded-full bg-brand-red animate-pulse"></div>
+                <span data-i18n="contact_avail">AVAILABLE FOR FREELANCE</span>
+            </div>
+
+            <div
+                class="absolute bottom-8 left-8 text-xs text-text-muted tracking-widest font-medium uppercase z-10 hidden md:block">
+                <span data-i18n="footer_rights">ALL RIGHTS RESERVED © 2026 ZEED</span>
+            </div>
+        </div>
+
+        <!-- Contact Details -->
+        <div
+            class="w-full md:w-1/2 p-8 md:px-12 lg:p-16 flex flex-col justify-center gap-8 lg:gap-12 text-sm lg:text-base bg-brand-black/90 h-full border-l border-white/5 rtl:border-l-0 rtl:border-r">
+
+            <a href="https://instagram.com/zeed_jdbl" target="_blank"
+                class="magnetic flex items-center gap-6 group custom-hover">
+                <div
+                    class="w-16 h-16 rounded-full border border-white/10 bg-brand-black flex items-center justify-center text-text-muted group-hover:border-brand-red group-hover:bg-brand-red group-hover:text-white group-hover:shadow-red-glow transition-all duration-300">
+                    <svg class="w-6 h-6 fill-current" viewBox="0 0 448 512">
+                        <path
+                            d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9-2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z" />
+                    </svg>
+                </div>
+                <span class="group-hover:text-brand-red text-xl transition-colors font-medium">@zeed_jdbl</span>
+            </a>
+
+            <a href="https://tiktok.com/@jdbl" target="_blank"
+                class="magnetic flex items-center gap-6 group custom-hover">
+                <div
+                    class="w-16 h-16 rounded-full border border-white/10 bg-brand-black flex items-center justify-center text-text-muted group-hover:border-brand-red group-hover:bg-brand-red group-hover:text-white group-hover:shadow-red-glow transition-all duration-300">
+                    <svg class="w-5 h-5 fill-current" viewBox="0 0 448 512">
+                        <path
+                            d="M448 209.9a210.1 210.1 0 0 1 -122.8-39.3V349.4A162.6 162.6 0 1 1 185 188.3V278.2a74.6 74.6 0 1 0 52.2 71.2V0l88 0a121.2 121.2 0 0 0 1.9 22.2h0A122.2 122.2 0 0 0 381 102.4a121.4 121.4 0 0 0 67 20.1z" />
+                    </svg>
+                </div>
+                <span class="group-hover:text-brand-red text-xl transition-colors font-medium">@jdbl (TikTok)</span>
+            </a>
+
+            <a href="https://instagram.com/tadwir.sc" target="_blank"
+                class="magnetic flex items-center gap-6 group custom-hover">
+                <div
+                    class="w-16 h-16 rounded-full border border-white/10 bg-brand-black flex items-center justify-center text-text-muted group-hover:border-brand-red group-hover:bg-brand-red group-hover:text-white group-hover:shadow-red-glow transition-all duration-300">
+                    <svg class="w-6 h-6 fill-current" viewBox="0 0 448 512">
+                        <path
+                            d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9-2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z" />
+                    </svg>
+                </div>
+                <span class="group-hover:text-brand-red text-xl transition-colors font-medium">@tadwir.sc</span>
+            </a>
+
+        </div>
+    </footer>
+
+    <!-- Mobile Bottom Nav -->
+    <div
+        class="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-[320px] bg-brand-black/80 backdrop-blur-xl border border-white/10 rounded-full px-6 py-4 flex items-center justify-between shadow-2xl">
+        <a href="#" class="text-white/70 hover:text-brand-red transition-colors flex flex-col items-center gap-1"
+            aria-label="Home">
+            <i data-lucide="home" class="w-6 h-6"></i>
+        </a>
+        <a href="#projects-pin"
+            class="text-white/70 hover:text-brand-red transition-colors flex flex-col items-center gap-1"
+            aria-label="Projects">
+            <i data-lucide="layers" class="w-6 h-6"></i>
+        </a>
+        <a href="https://instagram.com/zeed_jdbl" target="_blank"
+            class="text-white/70 hover:text-brand-red transition-colors flex flex-col items-center gap-1"
+            aria-label="Instagram">
+            <svg class="w-6 h-6 fill-current" viewBox="0 0 448 512">
+                <path
+                    d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z" />
+            </svg>
+        </a>
+        <button
+            class="audio-toggle-btn mobile-nav-audio text-white/70 hover:text-brand-red transition-colors flex flex-col items-center gap-1 cursor-pointer"
+            aria-label="Toggle Audio">
+            <i data-lucide="volume-x" class="audio-icon w-6 h-6 pointer-events-none"></i>
+        </button>
+    </div>
+
+    <!-- Audio Toggle Button (Desktop Only) -->
+    <button
+        class="audio-toggle-btn hidden md:flex fixed bottom-6 right-6 md:bottom-10 md:right-10 z-[100] w-12 h-12 rounded-full bg-brand-black border border-brand-red text-brand-red items-center justify-center hover:bg-brand-red hover:text-white transition-all shadow-[0_0_15px_rgba(229,9,20,0.3)] group magnetic cursor-pointer">
+        <i data-lucide="volume-x" class="audio-icon w-5 h-5 pointer-events-none"></i>
+    </button>
+
+    <!-- =======================================================
+         INTERACTIVE SCRIPTS & I18N
+    ======================================================== -->
+    <script>
+        // 1. I18N DICTIONARY
+        const i18nData = {
+            en: {
+                top_title: "SOFTWARE ENGINEER", top_subtitle: "FULL STACK DEVELOPER", top_available: "AVAILABLE FOR FREELANCE",
+                hero_bg: "SYSTEM", hero_hello: "Hello, I'm", hero_name_first: "ZEED", hero_name_last: "AL-SUBAIE",
+                hero_role: "FULL STACK\nDEVELOPER", hero_desc: "I architect and build robust, high-performance web applications. Passionate about clean code, scalable systems, and building solutions that solve complex problems.",
+                hero_location: "AVAILABLE WORLDWIDE", hero_crosshair: "Turning complex logic into seamless digital solutions using modern tech stacks.",
+                stat_years: "YEARS", stat_exp: "EXPERIENCE", stat_proj: "PROJECTS", stat_comp: "DEPLOYED", stat_happy: "HAPPY", stat_clients: "CLIENTS",
+                sec_services_sub: "WHAT I DO", sec_services_title: "MY", sec_services_title2: "EXPERTISE",
+                serv1_title: "FRONTEND ENGINEERING", serv1_desc: "Building highly interactive and performant user interfaces using React, Next.js, and modern state management.",
+                serv2_title: "GAME DEVELOPMENT", serv2_desc: "Building interactive 2D and 3D games using Unity and C#.",
+                serv3_title: "ARDUINO", serv3_desc: "Programming and building embedded systems and interactive hardware projects using C++.",
+                sec_projects: "SELECTED", sec_projects2: "PROJECTS", projects_desc: "A curated selection of my technical work, showcasing complex problem solving and modern architectures.", projects_scroll: "SCROLL TO EXPLORE",
+                proj1_title: "TADWIR", proj1_type: "SMART KIOSK / AI PLATFORM", proj2_title: "CONRAH AI", proj2_type: "AI WORKSPACE / LOCAL LLM", proj3_title: "BOOMAH", proj3_type: "EDTECH PLATFORM",
+                test1: '"FLAWLESS ARCHITECTURE" — TECH LEAD', test2: '"INCREDIBLY FAST" — PRODUCT MANAGER', test3: '"CLEANEST CODEBASE" — SENIOR DEV',
+                sec_edu_skills: "EDUCATION & SKILLS", sub_edu: "EDUCATION", edu1_title: "Unmanned Aircraft Systems", edu1_uni: "Tuwaiq Academy", edu2_title: "Computer Science", edu2_uni: "King Saud University",
+                sub_skills: "TECH STACK", sec_process: "DEVELOPMENT LIFECYCLE",
+                proc1_title: "PLAN", proc1_desc: "System architecture design, database schema planning, and API spec definition.", proc2_title: "BUILD", proc2_desc: "Writing clean, testable code using Agile methodologies and modern frameworks.", proc3_title: "DEPLOY", proc3_desc: "Setting up CI/CD pipelines, containerization, and cloud infrastructure.",
+                quote_text: "Good code is its own best documentation.", quote_footer: "LET'S BUILD\nSOMETHING ROBUST\nTOGETHER.",
+                sec_faq: "FREQUENTLY ASKED", faq1_q: "What programming languages do you use?", faq1_a: "I primarily work with C# and C++ for game development and hardware, along with Python for backend logic and AI.",
+                faq2_q: "Can you build custom Arduino projects?", faq2_a: "Yes, I design and program custom Arduino-based circuits for robotics, IoT devices, and interactive installations.", faq3_q: "Do you provide UI/UX design services?", faq3_a: "Absolutely. I design intuitive and modern user interfaces for web and mobile applications before beginning the development phase.",
+                faq_q3: "CAN YOU RESCUE AN EXISTING CODEBASE?", faq_a3: "Absolutely. I can audit your current repository, refactor legacy code, fix performance bottlenecks, and migrate to modern frameworks.",
+                faq_q4: "WHAT IS YOUR AVAILABILITY?", faq_a4: "I am currently taking new clients. Depending on the scale of the project, I usually need a 1-2 week notice before starting.",
+                bh_title: "<SYSTEM.HALT />", bh_desc: "Where all logic converges into a singular execution.",
+                contact_h2_1: "LET'S BUILD", contact_h2_2: "TOGETHER", contact_desc: "I'm currently open for new projects and collaborations. Let's build something robust that scales.", contact_avail: "AVAILABLE FOR FREELANCE",
+                footer_rights: "ALL RIGHTS RESERVED © 2026 ZEED"
+            },
+            ar: {
+                top_title: "مهندس برمجيات", top_subtitle: "مطور واجهات متكاملة", top_available: "متاح للعمل الحر",
+                hero_bg: "مشاريع", hero_hello: "مرحباً، أنا", hero_name_first: "زيد", hero_name_last: "السبيعي",
+                hero_role: "مطور\nFull Stack", hero_desc: "أبني وأصمم أنظمة وتطبيقات ويب متقدمة وعالية الأداء. شغوف بكتابة الكود النظيف، وبناء الأنظمة القابلة للتوسع لحل المشاكل التقنية المعقدة.",
+                hero_location: "متاح للعمل عالمياً", hero_crosshair: "تحويل المنطق المعقد إلى حلول رقمية سلسة باستخدام أحدث التقنيات.",
+                stat_years: "سنوات", stat_exp: "من الخبرة", stat_proj: "تطبيقاً", stat_comp: "تم إطلاقه", stat_happy: "عميلاً", stat_clients: "سعيداً",
+                sec_services_sub: "ماذا أقدم", sec_services_title: "مجالات", sec_services_title2: "خبرتي",
+                serv1_title: "تطوير واجهات المستخدم", serv1_desc: "بناء واجهات مستخدم تفاعلية وعالية الأداء باستخدام React و Next.js وأنظمة إدارة الحالة الحديثة.",
+                serv2_title: "تطوير الالعاب", serv2_desc: "بناء ألعاب تفاعلية ثنائية وثلاثية الأبعاد باستخدام تقنيات Unity و C#.",
+                serv3_title: "اردونيو", serv3_desc: "برمجة وبناء أنظمة مدمجة ومشاريع تفاعلية ذكية باستخدام C++.",
+                sec_projects: "مشاريع", sec_projects2: "مختارة", projects_desc: "مجموعة مختارة بعناية من أعمالي البرمجية، تستعرض حلولاً برمجية معقدة وهياكل أنظمة حديثة.", projects_scroll: "مرر لاستكشاف المزيد",
+                proj1_title: "Tadwir", proj1_type: "كشك ذكي / منصة ذكاء اصطناعي", proj2_title: "Conrah AI", proj2_type: "بيئة عمل / نماذج ذكاء اصطناعي محلية", proj3_title: "بومة - BOOMAH", proj3_type: "منصة تعليمية",
+                test1: '"هندسة برمجية خالية من العيوب" — مدير تقني', test2: '"أداء فائق السرعة" — مدير منتج', test3: '"أنظف كود رأيته" — مبرمج أول',
+                sec_edu_skills: "التعليم والمهارات", sub_edu: "التعليم", edu1_title: "طائرات غير مأهولة", edu1_uni: "أكاديمية طويق", edu2_title: "علوم الحاسب", edu2_uni: "جامعة الملك سعود",
+                sub_skills: "التقنيات", sec_process: "دورة حياة التطوير",
+                proc1_title: "التخطيط", proc1_desc: "تصميم هندسة النظام، وتخطيط قواعد البيانات، وتحديد مواصفات الـ API.", proc2_title: "البرمجة", proc2_desc: "كتابة كود نظيف وقابل للاختبار باستخدام المنهجيات الرشيقة (Agile) وأحدث أطر العمل.", proc3_title: "النشر", proc3_desc: "إعداد مسارات النشر المستمر، واستخدام الحاويات (Docker)، وإدارة البنية التحتية السحابية.",
+                quote_text: "الكود الجيد هو أفضل توثيق لنفسه.", quote_footer: "لِنَبْنِ نظاماً\nقوياً\nمعاً.",
+                sec_faq: "الأسئلة الشائعة", faq1_q: "ما هي لغات البرمجة التي تستخدمها؟", faq1_a: "أعمل بشكل أساسي بلغات C# و C++ لتطوير الألعاب والأنظمة المدمجة (Arduino)، بالإضافة إلى بايثون للذكاء الاصطناعي.",
+                faq2_q: "هل يمكنك بناء مشاريع أردوينو مخصصة؟", faq2_a: "نعم، أقوم بتصميم وبرمجة دوائر أردوينو للروبوتات، وأجهزة إنترنت الأشياء (IoT)، والمجسمات التفاعلية.", faq3_q: "هل تقدم خدمات تصميم واجهات المستخدم UI/UX؟", faq3_a: "بالتأكيد. أقوم بتصميم واجهات عصرية وسهلة الاستخدام للتطبيقات والمواقع قبل البدء في مرحلة البرمجة.",
+                faq_q3: "هل يمكنك إصلاح موقع أو تطبيق مبني مسبقاً؟", faq_a3: "بالتأكيد. يمكنني مراجعة الكود الحالي، وإعادة كتابة الأجزاء القديمة، وإصلاح مشاكل الأداء، ونقل النظام إلى تقنيات حديثة.",
+                faq_q4: "ما هو مدى تفرغك للعمل؟", faq_a4: "أنا متاح حالياً لاستقبال عملاء جدد. أحتاج عادةً إلى إشعار مسبق من أسبوع إلى أسبوعين قبل البدء بأي مشروع جديد.",
+                bh_title: "<SYSTEM.HALT />", bh_desc: "حيث تتلاقى جميع الأوامر البرمجية في تنفيذ واحد ونهائي.",
+                contact_h2_1: "لِنَبْنِ", contact_h2_2: "معاً", contact_desc: "أنا متاح حالياً لمشاريع برمجية جديدة. لنبني شيئاً قابلاً للتوسع ويتحمل الضغط.", contact_avail: "متاح للعمل الحر", footer_rights: "جميع الحقوق محفوظة © 2026 زيد"
+            }
+        };
+
+        let currentLang = 'en';
+        let marqueeTween;
+
+        function initMarquee() {
+            if (marqueeTween) marqueeTween.kill();
+            gsap.set('.marquee-track', { xPercent: 0 });
+            marqueeTween = gsap.to('.marquee-track', {
+                xPercent: () => document.documentElement.dir === 'rtl' ? 50 : -50,
+                ease: "none", duration: 15, repeat: -1
+            });
+        }
+
+        function applyLanguage(lang) {
+            currentLang = lang;
+            const html = document.documentElement;
+            html.setAttribute('lang', lang);
+            html.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+            const langBtnLabel = document.getElementById('lang-btn-label');
+            if (langBtnLabel) langBtnLabel.textContent = lang === 'ar' ? 'English' : 'عربي';
+
+            if (window.textToReveal) window.textToReveal.revert();
+
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (i18nData[lang] && i18nData[lang][key]) {
+                    el.innerHTML = i18nData[lang][key].replace(/\n/g, '<br>');
+                }
+            });
+
+            try {
+                window.textToReveal = new SplitType('.name-title, .giant-bg-text', { types: 'words' });
+                gsap.from(window.textToReveal.words, { y: 50, opacity: 0, stagger: 0.05, duration: 0.8, ease: 'expo.out' });
+            } catch (e) { }
+
+            initMarquee();
+            setTimeout(() => {
+                if (window.initHorizontalScroll) window.initHorizontalScroll();
+                ScrollTrigger.refresh();
+            }, 300);
+        }
+
+        function setLanguage(lang, initial = false) {
+            if (!initial && currentLang === lang) return;
+
+            if (!initial) {
+                document.body.style.pointerEvents = 'none';
+                // Safety fallback to restore pointer-events if animation fails
+                const safetyTimeout = setTimeout(() => { document.body.style.pointerEvents = 'auto'; }, 2000);
+
+                gsap.to('#lang-transition', {
+                    y: '0%', duration: 0.6, ease: 'expo.inOut',
+                    onComplete: () => {
+                        try {
+                            applyLanguage(lang);
+                        } catch (err) {
+                            console.error(err);
+                        } finally {
+                            gsap.to('#lang-transition', {
+                                y: '-100%', duration: 0.6, ease: 'expo.inOut', delay: 0.3,
+                                onComplete: () => {
+                                    gsap.set('#lang-transition', { y: '100%' });
+                                    document.body.style.pointerEvents = 'auto';
+                                    clearTimeout(safetyTimeout);
+                                }
+                            });
+                        }
+                    }
+                });
+            } else {
+                applyLanguage(lang);
+            }
+        }
+
+        document.getElementById('lang-switch-btn')?.addEventListener('click', () => {
+            setLanguage(currentLang === 'ar' ? 'en' : 'ar', false);
+        });
+
+        // 2. INITIALIZATION & GSAP ANIMATIONS
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            setLanguage('en', true);
+            gsap.registerPlugin(ScrollTrigger);
+
+            // Ambient Glow Follow Mouse
+            const ambientGlow = document.getElementById('ambient-glow');
+            if (ambientGlow) {
+                const xTo = gsap.quickTo(ambientGlow, "x", { duration: 2, ease: "power3.out" });
+                const yTo = gsap.quickTo(ambientGlow, "y", { duration: 2, ease: "power3.out" });
+                document.addEventListener('mousemove', (e) => {
+                    xTo(e.clientX);
+                    yTo(e.clientY);
+                });
+            }
+
+            // Scroll Progress
+            gsap.to('#scroll-progress', {
+                width: '100%', ease: 'none',
+                scrollTrigger: { trigger: 'body', start: 'top top', end: 'bottom bottom', scrub: true }
+            });
+
+            // Smart Header (Throttled for Performance)
+            let lastScroll = 0;
+            let ticking = false;
+            const header = document.getElementById('main-header');
+            window.addEventListener('scroll', () => {
+                const currentScroll = window.pageYOffset;
+                if (!ticking) {
+                    window.requestAnimationFrame(() => {
+                        if (currentScroll > 150 && currentScroll > lastScroll) {
+                            header.style.transform = 'translateY(-100%)';
+                        } else {
+                            header.style.transform = 'translateY(0)';
+                        }
+                        lastScroll = currentScroll;
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            });
+
+            // Magnetic effect
+            document.querySelectorAll('.magnetic').forEach(btn => {
+                const xTo = gsap.quickTo(btn, "x", { duration: 0.6, ease: "power3.out" });
+                const yTo = gsap.quickTo(btn, "y", { duration: 0.6, ease: "power3.out" });
+
+                btn.addEventListener('mousemove', (e) => {
+                    const rect = btn.getBoundingClientRect();
+                    const x = e.clientX - rect.left - rect.width / 2;
+                    const y = e.clientY - rect.top - rect.height / 2;
+                    xTo(x * 0.4);
+                    yTo(y * 0.4);
+                });
+                btn.addEventListener('mouseleave', () => {
+                    gsap.to(btn, { x: 0, y: 0, duration: 0.8, ease: "elastic.out(1, 0.3)" });
+                });
+            });
+
+            // 3D Tilt Effect
+            document.querySelectorAll('.tilt-card').forEach(card => {
+                card.addEventListener('mousemove', e => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    const rotateX = ((y - centerY) / centerY) * -15;
+                    const rotateY = ((x - centerX) / centerX) * 15;
+                    gsap.to(card.querySelector('.tilt-inner'), {
+                        rotateX: rotateX, rotateY: rotateY, duration: 0.5, ease: 'power2.out', transformPerspective: 1000
+                    });
+                    gsap.to(card.querySelector('.card-content'), {
+                        x: rotateY * 2, y: -rotateX * 2, duration: 0.5, ease: 'power2.out'
+                    });
+                });
+                card.addEventListener('mouseleave', () => {
+                    gsap.to(card.querySelector('.tilt-inner'), { rotateX: 0, rotateY: 0, duration: 0.7, ease: 'power2.out' });
+                    gsap.to(card.querySelector('.card-content'), { x: 0, y: 0, duration: 0.7, ease: 'power2.out' });
+                });
+            });
+
+            // Horizontal Scroll Gallery
+            const projectsContainer = document.getElementById('projects-container');
+            window._horizontalST = null;
+            window.initHorizontalScroll = function () {
+                if (!projectsContainer || window.innerWidth <= 768) return;
+                // Kill previous ScrollTrigger completely
+                if (window._horizontalST) {
+                    window._horizontalST.kill();
+                    window._horizontalST = null;
+                }
+                // Reset all inline transforms
+                gsap.set(projectsContainer, { clearProps: "x" });
+
+                const isRTL = document.documentElement.dir === 'rtl';
+                const scrollDist = projectsContainer.scrollWidth - window.innerWidth;
+
+                gsap.fromTo(projectsContainer,
+                    { x: 0 },
+                    {
+                        x: isRTL ? scrollDist : -scrollDist,
+                        ease: "none",
+                        scrollTrigger: {
+                            trigger: "#projects-pin",
+                            pin: true,
+                            scrub: 1,
+                            start: "top top",
+                            end: "+=" + scrollDist,
+                            invalidateOnRefresh: true,
+                            onRefresh: self => { window._horizontalST = self; }
+                        }
+                    }
+                );
+                // Store reference via getAll
+                const allSTs = ScrollTrigger.getAll();
+                window._horizontalST = allSTs[allSTs.length - 1];
+            };
+            window.initHorizontalScroll();
+
+            // Marquee Animation (Handled by initMarquee)
+            initMarquee();
+
+            // Preloader & Reveal Animations
+            try { window.textToReveal = new SplitType('.name-title, .giant-bg-text', { types: 'words' }); } catch (e) { }
+
+            const tl = gsap.timeline();
+            tl.to('#preloader-bar', { width: '100%', duration: 1, ease: 'power2.inOut' })
+                .to('.preloader-text', { y: 0, duration: 0.8, stagger: 0.1, ease: 'expo.out' })
+                .to('.preloader-text', { y: '-120%', duration: 0.8, stagger: 0.05, ease: 'expo.in', delay: 0.5 })
+                .to('#preloader', { yPercent: -100, duration: 1, ease: 'expo.inOut', onComplete: () => document.getElementById('preloader')?.remove() })
+                .from('.hero-portrait', { y: 150, opacity: 0, scale: 0.9, duration: 1.5, ease: 'expo.out' }, "-=0.5")
+                .from(window.textToReveal ? window.textToReveal.words : '.name-title', { y: 100, opacity: 0, stagger: 0.1, duration: 1.2, ease: 'expo.out' }, "-=1.2")
+                .from('.gs-reveal-left', { x: () => document.documentElement.dir === 'rtl' ? 60 : -60, opacity: 0, duration: 1.2, ease: "power3.out" }, "-=1")
+                .from('.gs-reveal-right', { x: () => document.documentElement.dir === 'rtl' ? -60 : 60, opacity: 0, duration: 1.2, ease: "power3.out" }, "-=1");
+
+            gsap.utils.toArray('.gs-fade-up').forEach(elem => {
+                gsap.fromTo(elem, { y: 60, opacity: 0 }, {
+                    y: 0, opacity: 1, duration: 1, ease: "power3.out", scrollTrigger: { trigger: elem, start: "top 85%" }
+                });
+            });
+
+            // Custom Cursor Move
+            const cursor = document.getElementById('custom-cursor');
+            if (cursor) {
+                let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+                let cursorX = window.innerWidth / 2, cursorY = window.innerHeight / 2;
+                document.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
+                gsap.ticker.add(() => {
+                    cursorX += (mouseX - cursorX) * 0.15; cursorY += (mouseY - cursorY) * 0.15;
+                    cursor.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0) translate(-50%, -50%)`;
+                });
+                document.querySelectorAll('a, button, .custom-hover, .faq-item').forEach(el => {
+                    el.addEventListener('mouseenter', () => document.body.classList.add('hovering-link'));
+                    el.addEventListener('mouseleave', () => document.body.classList.remove('hovering-link'));
+                });
+            }
+        });
+    </script>
+
+    <!-- =======================================================
+         REAL 3D INTEGRATION (THREE.JS)
+    ======================================================== -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof THREE === 'undefined') return;
+
+            const canvas = document.getElementById('webgl-canvas');
+            if (!canvas) return;
+
+            const scene = new THREE.Scene();
+
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 30;
+
+            const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            // === BLACK HOLE CORE (Event Horizon) ===
+            const coreGeo = new THREE.SphereGeometry(2.5, 32, 32);
+            const coreMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+            const core = new THREE.Mesh(coreGeo, coreMat);
+            scene.add(core);
+
+            // === GRAVITATIONAL LENSING GLOW ===
+            const glowGeo = new THREE.SphereGeometry(3.2, 32, 32);
+            const glowMat = new THREE.MeshBasicMaterial({
+                color: 0xE50914,
+                transparent: true,
+                opacity: 0.08,
+                side: THREE.BackSide
+            });
+            const glow = new THREE.Mesh(glowGeo, glowMat);
+            scene.add(glow);
+
+            // Outer glow halo
+            const haloGeo = new THREE.SphereGeometry(4.5, 32, 32);
+            const haloMat = new THREE.MeshBasicMaterial({
+                color: 0xE50914,
+                transparent: true,
+                opacity: 0.03,
+                side: THREE.BackSide
+            });
+            const halo = new THREE.Mesh(haloGeo, haloMat);
+            scene.add(halo);
+
+            // Generate soft glow texture for particles to make them look like real light/gas
+            function createGlowTexture() {
+                const canvas = document.createElement('canvas');
+                canvas.width = 64;
+                canvas.height = 64;
+                const context = canvas.getContext('2d');
+                const gradient = context.createRadialGradient(32, 32, 0, 32, 32, 32);
+                gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+                gradient.addColorStop(0.2, 'rgba(255, 255, 255, 0.8)');
+                gradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.2)');
+                gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+                context.fillStyle = gradient;
+                context.fillRect(0, 0, 64, 64);
+                return new THREE.CanvasTexture(canvas);
+            }
+            const glowTex = createGlowTexture();
+
+            // Dynamically scale particle count based on device width to ensure performance
+            const isMobile = window.innerWidth < 768;
+            const pm = isMobile ? 0.25 : 1.0;
+
+            // === ACCRETION DISK (Flat Equatorial Ring) ===
+            const flatCount = Math.floor(15000 * pm);
+            const flatPos = new Float32Array(flatCount * 3);
+            const flatCol = new Float32Array(flatCount * 3);
+            const flatRadii = new Float32Array(flatCount);
+            const flatAngles = new Float32Array(flatCount);
+            const flatSpeeds = new Float32Array(flatCount);
+
+            for (let i = 0; i < flatCount; i++) {
+                const r = 2.6 + Math.random() * 6.5; // Start closer to event horizon
+                const theta = Math.random() * Math.PI * 2;
+                flatPos[i * 3] = Math.cos(theta) * r;
+                flatPos[i * 3 + 1] = (Math.random() - 0.5) * (0.05 + (r - 2.6) * 0.03); // Tighter vertical spread
+                flatPos[i * 3 + 2] = Math.sin(theta) * r;
+                flatRadii[i] = r;
+                flatAngles[i] = theta;
+                flatSpeeds[i] = (1 / (r * 0.5)) * (0.6 + Math.random() * 0.4);
+
+                const t = (r - 2.6) / 6.5;
+                if (Math.random() > 0.7) {
+                    flatCol[i * 3] = 1.0; flatCol[i * 3 + 1] = 0.9; flatCol[i * 3 + 2] = 0.9; // White/Yellow Core
+                } else {
+                    flatCol[i * 3] = 0.9 - t * 0.3; flatCol[i * 3 + 1] = 0.035; flatCol[i * 3 + 2] = 0.08; // Deep Red Edge
+                }
+            }
+            const flatGeo = new THREE.BufferGeometry();
+            flatGeo.setAttribute('position', new THREE.BufferAttribute(flatPos, 3));
+            flatGeo.setAttribute('color', new THREE.BufferAttribute(flatCol, 3));
+            const flatMat = new THREE.PointsMaterial({ size: 0.12, map: glowTex, vertexColors: true, transparent: true, opacity: 0.4, blending: THREE.AdditiveBlending, depthWrite: false });
+            const flatMesh = new THREE.Points(flatGeo, flatMat);
+            flatMesh.rotation.x = Math.PI * 0.46; // Tilt it almost edge-on
+            scene.add(flatMesh);
+
+            // === OUTER SPACE DUST ===
+            const dustCount = Math.floor(1000 * pm);
+            const dustPositions = new Float32Array(dustCount * 3);
+            for (let i = 0; i < dustCount * 3; i++) {
+                dustPositions[i] = (Math.random() - 0.5) * 120;
+            }
+            const dustGeo = new THREE.BufferGeometry();
+            dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPositions, 3));
+            const dustMat = new THREE.PointsMaterial({ size: 0.15, map: glowTex, color: 0xffffff, transparent: true, opacity: 0.2, blending: THREE.AdditiveBlending, depthWrite: false });
+            const dustMesh = new THREE.Points(dustGeo, dustMat);
+            scene.add(dustMesh);
+
+            // === GRAVITATIONAL LENSING (Top & Bottom Arches) ===
+            const archCount = Math.floor(10000 * pm);
+            const archPos = new Float32Array(archCount * 3);
+            const archCol = new Float32Array(archCount * 3);
+            const archSpeeds = new Float32Array(archCount);
+
+            for (let i = 0; i < archCount; i++) {
+                const isTop = Math.random() > 0.5;
+                const r = 2.52 + Math.random() * 1.8;
+                const theta = isTop ? (Math.random() * Math.PI) : (Math.PI + Math.random() * Math.PI);
+
+                archPos[i * 3] = Math.cos(theta) * r;
+                archPos[i * 3 + 1] = Math.sin(theta) * r;
+                archPos[i * 3 + 2] = 0.1 + (Math.random() * 0.4); // Push slightly in front of the core to render over it
+
+                archSpeeds[i] = (Math.random() - 0.5) * 0.005;
+
+                if (Math.random() > 0.7) {
+                    archCol[i * 3] = 1.0; archCol[i * 3 + 1] = 0.9; archCol[i * 3 + 2] = 0.9;
+                } else {
+                    archCol[i * 3] = 0.9; archCol[i * 3 + 1] = 0.035; archCol[i * 3 + 2] = 0.08;
+                }
+            }
+            const archGeo = new THREE.BufferGeometry();
+            archGeo.setAttribute('position', new THREE.BufferAttribute(archPos, 3));
+            archGeo.setAttribute('color', new THREE.BufferAttribute(archCol, 3));
+            const archMat = new THREE.PointsMaterial({ size: 0.1, map: glowTex, vertexColors: true, transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending, depthWrite: false });
+            const archMesh = new THREE.Points(archGeo, archMat);
+            scene.add(archMesh);
+
+            // === MOUSE INTERACTION ===
+            let mouseX = 0, mouseY = 0;
+            document.addEventListener('mousemove', (e) => {
+                mouseX = (e.clientX - window.innerWidth / 2);
+                mouseY = (e.clientY - window.innerHeight / 2);
+            });
+
+            // === ANIMATION LOOP ===
+            const clock = new THREE.Clock();
+
+            function animate() {
+                requestAnimationFrame(animate);
+                const t = clock.getElapsedTime();
+
+                // Rotate flat accretion disk
+                const flatPositions = flatGeo.attributes.position.array;
+                for (let i = 0; i < flatCount; i++) {
+                    flatAngles[i] += flatSpeeds[i] * 0.008;
+                    flatPositions[i * 3] = Math.cos(flatAngles[i]) * flatRadii[i];
+                    flatPositions[i * 3 + 2] = Math.sin(flatAngles[i]) * flatRadii[i];
+                }
+                flatGeo.attributes.position.needsUpdate = true;
+
+                // Slowly shimmer/shift the lensed arches
+                archMesh.rotation.z = t * 0.05;
+
+                // Pulsating glow
+                glow.scale.setScalar(1 + Math.sin(t * 1.5) * 0.05);
+                halo.scale.setScalar(1 + Math.sin(t * 0.8) * 0.08);
+                glowMat.opacity = 0.06 + Math.sin(t * 2) * 0.03;
+
+                // Mouse parallax
+                const targetX = mouseX * 0.0005;
+                const targetY = mouseY * 0.0005;
+                scene.rotation.y += 0.03 * (targetX - scene.rotation.y);
+                scene.rotation.x += 0.03 * (targetY - scene.rotation.x);
+
+                // Slow dust rotation
+                dustMesh.rotation.y = t * 0.01;
+                dustMesh.rotation.x = t * 0.005;
+
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        });
+
+        // ----------------------------------------------------
+        // AUDIO PLAYER (YouTube IFrame API)
+        // ----------------------------------------------------
+        let ytPlayer;
+        let isMusicPlaying = false;
+        let audioReady = false;
+
+        const tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        const playerDiv = document.createElement('div');
+        playerDiv.id = 'yt-player';
+        playerDiv.style.display = 'none';
+        document.body.appendChild(playerDiv);
+
+        window.onYouTubeIframeAPIReady = function () {
+            ytPlayer = new YT.Player('yt-player', {
+                height: '0',
+                width: '0',
+                videoId: 'u9i6OaCjhlw',
+                playerVars: { 'autoplay': 0, 'controls': 0, 'loop': 1, 'playlist': 'u9i6OaCjhlw' },
+                events: {
+                    'onReady': (event) => {
+                        audioReady = true;
+                        event.target.setVolume(40);
+                    }
+                }
+            });
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const audioBtns = document.querySelectorAll('.audio-toggle-btn');
+
+            function updateAudioIconAndStyle(isPlaying) {
+                audioBtns.forEach(btn => {
+                    const icon = btn.querySelector('.audio-icon');
+                    if (icon) {
+                        icon.setAttribute('data-lucide', isPlaying ? 'volume-2' : 'volume-x');
+                    }
+                    if (isPlaying) {
+                        btn.classList.remove('bg-brand-black', 'text-brand-red', 'text-white/70');
+                        if (btn.classList.contains('mobile-nav-audio')) {
+                            btn.classList.add('text-brand-red');
+                        } else {
+                            btn.classList.add('bg-brand-red', 'text-white');
+                        }
+                    } else {
+                        btn.classList.remove('bg-brand-red', 'text-white', 'text-brand-red');
+                        if (btn.classList.contains('mobile-nav-audio')) {
+                            btn.classList.add('text-white/70');
+                        } else {
+                            btn.classList.add('bg-brand-black', 'text-brand-red');
+                        }
+                    }
+                });
+                lucide.createIcons();
+            }
+
+            function startPlayback() {
+                if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
+                    ytPlayer.playVideo();
+                }
+                isMusicPlaying = true;
+                updateAudioIconAndStyle(true);
+            }
+
+            audioBtns.forEach(audioBtn => {
+                audioBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (isMusicPlaying) {
+                        if (ytPlayer && typeof ytPlayer.pauseVideo === 'function') {
+                            ytPlayer.pauseVideo();
+                        }
+                        isMusicPlaying = false;
+                        updateAudioIconAndStyle(false);
+                    } else {
+                        if (!audioReady) {
+                            audioBtn.classList.add('animate-pulse');
+                            const checkReady = setInterval(() => {
+                                if (audioReady) {
+                                    clearInterval(checkReady);
+                                    audioBtn.classList.remove('animate-pulse');
+                                    startPlayback();
+                                }
+                            }, 500);
+                        } else {
+                            startPlayback();
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
